@@ -1,0 +1,41 @@
+{
+  "decks": [
+    {
+      "id": 1,
+      "name": "Jack",
+      "description": "man"
+    }
+  ],
+  "cards": [
+    {
+      "front": "",
+      "back": "fsdfs",
+      "deckId": 1,
+      "id": 1
+    },
+    {
+      "0": {
+        "front": "",
+        "back": "fsdfs",
+        "deckId": 1,
+        "id": 1
+      },
+      "front": "hello",
+      "back": "world",
+      "deckId": 1,
+      "id": 2
+    },
+    {
+      "front": "",
+      "back": "",
+      "deckId": 1,
+      "id": 3
+    },
+    {
+      "front": "test",
+      "back": "test",
+      "deckId": 1,
+      "id": 4
+    }
+  ]
+}
