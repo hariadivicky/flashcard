@@ -26,11 +26,9 @@ const router = jsonServer.router(dbPath)
 
 // database reloader middleware,
 // because json-server is not doing auto-reloading when used as a module.
-server.use((req, res, next) => {
-  if (req.method === 'GET') {
-    const data = fs.readFileSync(dbPath)
-    router.db.setState(JSON.parse(data))
-  }
+server.use((_req, _res, next) => {
+  const data = fs.readFileSync(dbPath)
+  router.db.setState(JSON.parse(data))
 
   return next()
 })
