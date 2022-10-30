@@ -1,11 +1,43 @@
+const fs = require('fs')
+const path = require('path')
 const jsonServer = require('json-server')
-const server = jsonServer.create()
-const router = jsonServer.router('data/db.json')
-const middlewares = jsonServer.defaults()
+const multer = require('multer')
+const low = require('lowdb')
+const FileSync = require('lowdb/adapters/FileSync')
+const { createDeck } = require('./api/createDeck')
+const dbPath = path.join(__dirname, 'data/db.json')
 
+const server = jsonServer.create()
+const middlewares = jsonServer.defaults()
+const adapter = new FileSync(dbPath)
+const db = new low(adapter)
+const upload = multer()
 
 server.use(middlewares)
+server.use(jsonServer.bodyParser)
+
+// overwrite create a deck, to allow file import.
+server.post('/decks', upload.single('cards'), async (req, res) => {
+  const result = await createDeck(db, req.body, req.file)
+  return res.json(result)
+})
+
+const router = jsonServer.router(dbPath)
+
+// database reloader middleware,
+// because json-server is not doing auto-reloading when used as a module.
+server.use((req, res, next) => {
+  if (req.method === 'GET') {
+    const data = fs.readFileSync(dbPath)
+    router.db.setState(JSON.parse(data))
+  }
+
+  return next()
+})
+
 server.use(router)
-server.listen(5000, () => {
-  console.log('JSON Server is running')
+
+const port = 5000
+server.listen(port, () => {
+  console.log(`JSON Server is running on port ${port}`)
 })
