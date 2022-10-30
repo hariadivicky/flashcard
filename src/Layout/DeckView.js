@@ -4,7 +4,8 @@ import { readDeck, deleteCard } from "../utils/api/index"
 
 
 function DeckView({deck, setDeck, setCards, cards}) {
-    const {deckId} = useParams();
+    const params = useParams()
+    const { deckId } = params
     const history = useHistory();
 
     useEffect(() => {
@@ -80,11 +81,14 @@ function DeckView({deck, setDeck, setCards, cards}) {
                     <Link to={`/decks/${deck.id}/cards/new`}>
                         <button className="btn btn-primary" type="button">Add Cards</button>
                     </Link>
+                    <Link to={`/decks/${deck.id}/cards/import`}>
+                        <button className="btn btn-primary" type="button">Import Cards</button>
+                    </Link>
                 </div>
             </div>
             <div>
-            <h3>Cards</h3>
-            <div>{listOfCards}</div>
+                <h3>Cards</h3>
+                <div>{listOfCards}</div>
             </div>
         </div>
     )

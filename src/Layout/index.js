@@ -9,6 +9,7 @@ import AddCard from "./AddCard"
 import EditDeck from "./EditDeck"
 import EditCard from "./EditCard"
 import { BrowserRouter as Router, Route, Switch, useParams, useHistory } from "react-router-dom"
+import ImportCard from "./ImportCard"
 
 function Layout() {
   const [decks, setDecks] = useState([])
@@ -38,6 +39,9 @@ function Layout() {
         </Route>
         <Route exact path="/decks/:deckId/cards/new">
           <AddCard deck={deck} setDeck={setDeck} cards={cards} setCards={setCards}/>
+        </Route>
+        <Route exact path="/decks/:deckId/cards/import">
+          <ImportCard />
         </Route>
         <Route exact path="/decks/:deckId/cards/:cardsId/edit">
           <EditCard deck={deck} setDeck={setDeck} cards={cards} setCards={setCards}/>

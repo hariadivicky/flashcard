@@ -118,6 +118,28 @@ export async function updateDeck(updatedDeck, signal) {
 }
 
 /**
+ * Import cards to an existing deck
+ * @param deck
+ *  the deck to save, which must have an `id` property.
+ * @param formData
+ *  formData container.
+ * @param signal
+ *  optional AbortController.signal
+ * @returns {Promise<Error|*>}
+ *  a promise that resolves to the updated deck.
+ */
+export async function importCardsToDeck(deck, formData, signal) {
+  const url = `${API_BASE_URL}/decks/${deck.id}/cards/import`;
+  const options = {
+    method: 'PUT',
+    body: formData,
+    signal
+  }
+
+  return await fetchJson(url, options);
+}
+
+/**
  * Deletes the deck with the specified `deckId`.
  * @param deckId
  *  the id of the deck to delete

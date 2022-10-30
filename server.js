@@ -13,36 +13,33 @@ const middlewares = jsonServer.defaults()
 const adapter = new FileSync(dbPath)
 const db = new low(adapter)
 const upload = multer()
+const router = jsonServer.router(dbPath)
 
 server.use(middlewares)
 server.use(jsonServer.bodyParser)
-
-// overwrite create a deck, to allow file import.
-server.post('/decks', upload.single('cards'), async (req, res) => {
-  const result = await createDeck(db, req.body, req.file)
-  return res.json(result)
-})
-
-// overwrite create a deck, to allow file import.
-server.put('/decks/:id', upload.single('cards'), async (req, res) => {
-  console.log({ params: req.params })
-  const result = await updateDeck(db, parseInt(req.params.id), req.body, req.file)
-  if (!result) {
-    return res.sendStatus(404)
-  }
-
-  return res.json(result)
-})
-
-const router = jsonServer.router(dbPath)
-
 // database reloader middleware,
 // because json-server is not doing auto-reloading when used as a module.
 server.use((_req, _res, next) => {
   const data = fs.readFileSync(dbPath)
   router.db.setState(JSON.parse(data))
+})
 
-  return next()
+// overwrite create a deck, to allow file import.
+server.post('/decks', upload.single('cards'), async (req, res) => {
+  db.read()
+  const result = await createDeck(db, req.body, req.file)
+  return res.json(result)
+})
+
+// overwrite create a deck, to allow file import.
+server.put('/decks/:id/cards/import', upload.single('cards'), async (req, res) => {
+  db.read()
+  const result = await updateDeck(db, parseInt(req.params.id), req.file)
+  if (!result) {
+    return res.sendStatus(404)
+  }
+
+  return res.json(result)
 })
 
 server.use(router)
