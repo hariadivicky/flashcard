@@ -40,8 +40,6 @@ function stripCards(deck) {
  */
 async function fetchJson(url, options) {
 
-
-  
   try {
     const response = await fetch(url, options);
     if (response.status < 200 || response.status > 399) {
@@ -79,8 +77,7 @@ export async function createDeck(deck, signal) {
   const url = `${API_BASE_URL}/decks`;
   const options = {
     method: "POST",
-    headers,
-    body: JSON.stringify(stripCards(deck)),
+    body: deck,
     signal,
   };
   return await fetchJson(url, options);
