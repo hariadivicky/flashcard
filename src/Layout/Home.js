@@ -9,18 +9,21 @@ function Home({decks, setDecks}){
         event.preventDefault();
         history.push("/decks/new")
     }
+
     return (
-        <div>
-            <div>
-                <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={HandleCreateDeck}>
-                Create Deck
-                </button>
-            </div>
-            <Cards decks={decks} setDecks={setDecks}/>
+      <div>
+        <div className="mb-4">
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={HandleCreateDeck}
+          >
+            Create Deck
+          </button>
         </div>
+
+        <Cards decks={decks} setDecks={setDecks} />
+      </div>
     )
 }
 
