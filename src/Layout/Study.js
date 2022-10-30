@@ -1,59 +1,61 @@
-import React, { useState } from "react";
-import { Link, useHistory } from "react-router-dom";
+import React, { useRef } from "react"
+import Slider from 'react-slick'
+import Card from "./Card"
+import { Link } from 'react-router-dom'
 
 function Study({cards, deck}) {
-    const history = useHistory();
-    const [front, setFront] = useState(true)
-    const [cardIndex, setCardIndex] = useState(0)
-    console.log(cards)
-    console.log(deck)
+  const settings = {
+    infinite: false,
+    speed: 500,
+    draggable: false
+  }
 
-    function flip() {
-        setFront(!front)
-    }
-    
-    function next() {
-        if (cardIndex + 1 < cards.length) {
-            setCardIndex(cardIndex + 1);
-            setFront(true)
-        } else {
-            const result = window.confirm(
-                "Do you wan to restart? To return to the homepage click cancel"
-            )
-        if (result) {
-            setFront(true);
-            setCardIndex(0)
-        } else {
-            history.push("/")
-        }
-        }
-    }
+  const sliderRef = useRef()
 
+  const nextCard = () => {
+      sliderRef.current.slickNext()
+  }
 
-    if(cards.length <= 2) {
-        return (
-            <div>
-            <h3>Not Enough Cards.</h3>
-            <p>You need at least 3 cards to study. There are {cards.length} in this deck.</p>
-            <Link to={`/decks/${deck.id}/cards/new`}>
-                <button className="btn btn-primary">Add Cards</button>
-            </Link>
+  const prevCard = () => {
+      sliderRef.current.slickPrev()
+  }
+
+  if (cards < 3) {
+    return (
+      <div className="text-center">
+        <h3>Not Enough Cards.</h3>
+        <p>You need at least 3 cards to study. There are {cards.length} in this deck.</p>
+        <Link to={`/decks/${deck.id}/cards/new`}>
+          Add Card
+        </Link>
+        <span className="mx-3">or</span> 
+        <Link to={`/decks/${deck.id}/cards/import`}>
+          Import Card
+        </Link>
+      </div>
+    )
+  }
+
+  return (
+      <div className="row">
+        <div className="col-12 col-md-5 mx-auto">
+          <Slider {...settings} ref={sliderRef}>
+            {cards.map((card, index) => (
+              <div key={index} className="px-2">
+                <Card
+                  front={card.front}
+                  back={card.back}
+                  onPrev={prevCard}
+                  onNext={nextCard}
+                  position={index + 1}
+                  total={cards.length}
+                />
+              </div>
+            ))}
+          </Slider>
         </div>
-        )
-    } else {
-        return (
-                  <div className="card bg-light">
-            <div className="card-body">
-                <h5 className="card-title">Card {cardIndex + 1} of {cards.length}</h5>
-                <p className="card-text">{front ? deck.cards && deck.cards[cardIndex].front : deck.cards && deck.cards[cardIndex].back}</p>
-                <div className="btnContainer">
-                    {front ? null : <button onClick={next} className="btn btn-secondary">Next</button>}
-                    <button onClick={flip} className="btn btn-primary">Flip</button>
-                </div>
-            </div>
-        </div>
-        )
-    }
+      </div>
+  )
 }
 
 export default Study
