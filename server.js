@@ -22,6 +22,8 @@ server.use(jsonServer.bodyParser)
 server.use((_req, _res, next) => {
   const data = fs.readFileSync(dbPath)
   router.db.setState(JSON.parse(data))
+
+  next()
 })
 
 // overwrite create a deck, to allow file import.
