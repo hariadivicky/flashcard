@@ -37,7 +37,6 @@ function Layout() {
   const [deck, setDeck] = useState([])
   const [cards, setCards] = useState([]); 
 
-
   return (
     <div>
       <Header />
