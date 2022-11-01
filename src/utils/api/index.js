@@ -4,12 +4,30 @@
  */
 const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:5000";
 
+const getAuthToken = () => {
+  const storedSession = localStorage.getItem('flashcard-app-session')
+
+  if (!storedSession) {
+    return null
+  }
+
+  const session = JSON.parse(storedSession)
+  if (!session || !session.apiToken) {
+    return null
+  }
+
+  return session.apiToken
+}
+
 /**
  * Defines the default headers for these functions to work with `json-server`
  */
 const headers = new Headers();
 headers.append("Content-Type", "application/json");
-
+const authToken = getAuthToken()
+if (authToken) {
+  headers.set('Authorization', `Bearer ${authToken}`)
+}
 /**
  * Removes the `cards` property from the deck so it is not accidentally saved with the deck.
  *
@@ -42,7 +60,15 @@ async function fetchJson(url, options) {
 
   try {
     const response = await fetch(url, options);
+    // invalid token / unauthorized user.
+    if (response.status === 401) {
+      localStorage.removeItem('flashcard-app-sesion')
+      document.location.replace('/sign_in')
+      return
+    }
+
     const json = await response.json()
+
     if (response.status < 200 || response.status > 399) {
       throw new Error(JSON.stringify(json))
     }
@@ -102,7 +128,7 @@ async function fetchJson(url, options) {
  */
 export async function listDecks(signal) {
   const url = `${API_BASE_URL}/decks?_embed=cards`;
-  return await fetchJson(url, { signal });
+  return await fetchJson(url, { headers, signal });
 }
 
 /**
@@ -119,8 +145,9 @@ export async function createDeck(deck, signal) {
   const url = `${API_BASE_URL}/decks`;
   const options = {
     method: "POST",
-    body: deck,
+    body: deck,    
     signal,
+    headers: { authorization: `Bearer ${authToken}` },
   };
   return await fetchJson(url, options);
 }
@@ -136,7 +163,7 @@ export async function createDeck(deck, signal) {
  */
 export async function readDeck(deckId, signal) {
   const url = `${API_BASE_URL}/decks/${deckId}?_embed=cards`;
-  return await fetchJson(url, { signal });
+  return await fetchJson(url, { headers, signal });
 }
 
 /**
@@ -175,7 +202,8 @@ export async function importCardsToDeck(deck, formData, signal) {
   const options = {
     method: 'PUT',
     body: formData,
-    signal
+    signal,
+    headers: { authorization: `Bearer ${authToken}` },
   }
 
   return await fetchJson(url, options);
@@ -192,7 +220,7 @@ export async function importCardsToDeck(deck, formData, signal) {
  */
 export async function deleteDeck(deckId, signal) {
   const url = `${API_BASE_URL}/decks/${deckId}`;
-  const options = { method: "DELETE", signal };
+  const options = { method: "DELETE", signal, headers };
   return await fetchJson(url, options);
 }
 
@@ -207,7 +235,7 @@ export async function deleteDeck(deckId, signal) {
  */
 export async function listCards(deckId, signal) {
   const url = `${API_BASE_URL}/cards?deckId=${deckId}`;
-  return await fetchJson(url, { signal });
+  return await fetchJson(url, { signal, headers });
 }
 
 /**
@@ -247,7 +275,7 @@ export async function createCard(deckId, card, signal) {
  */
 export async function readCard(cardId, signal) {
   const url = `${API_BASE_URL}/cards/${cardId}`;
-  return await fetchJson(url, { signal });
+  return await fetchJson(url, { signal, headers });
 }
 
 /**
@@ -280,6 +308,6 @@ export async function updateCard(updatedCard, signal) {
  */
 export async function deleteCard(cardId, signal) {
   const url = `${API_BASE_URL}/cards/${cardId}`;
-  const options = { method: "DELETE", signal };
+  const options = { method: "DELETE", signal, headers };
   return await fetchJson(url, options);
 }

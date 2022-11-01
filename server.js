@@ -10,10 +10,13 @@ const { signUp } = require('./api/signUp')
 const { signIn } = require('./api/signIn')
 const dbPath = path.join(__dirname, 'data/db.json')
 
-const server = jsonServer.create()
-const middlewares = jsonServer.defaults()
 const adapter = new FileSync(dbPath)
 const db = new low(adapter)
+// database default collections.
+db.defaults({ decks: [], cards: [], users: [] }).write()
+
+const server = jsonServer.create()
+const middlewares = jsonServer.defaults()
 const upload = multer()
 const router = jsonServer.router(dbPath)
 
@@ -26,24 +29,6 @@ server.use((_req, _res, next) => {
   router.db.setState(JSON.parse(data))
 
   next()
-})
-
-// overwrite create a deck, to allow file import.
-server.post('/decks', upload.single('cards'), async (req, res) => {
-  db.read()
-  const result = await createDeck(db, req.body, req.file)
-  return res.json(result)
-})
-
-// overwrite create a deck, to allow file import.
-server.put('/decks/:id/cards/import', upload.single('cards'), async (req, res) => {
-  db.read()
-  const result = await updateDeck(db, parseInt(req.params.id), req.file)
-  if (!result) {
-    return res.sendStatus(404)
-  }
-
-  return res.json(result)
 })
 
 server.post('/auth/sign_up', (req, res) => {
@@ -64,6 +49,43 @@ server.post('/auth/sign_in', (req, res) => {
   }
 
   res.json(result)
+})
+
+server.use((req, res, next) => {
+  const authHeader = req.headers.authorization
+  if (!authHeader) {
+    return res.sendStatus(401)
+  }
+
+  const apiToken = authHeader.split(' ')[1]
+  if (!apiToken) {
+    return res.sendStatus(401)
+  }
+
+  const isValidToken = db.get('users').find({ apiToken }).value()
+  if (!isValidToken) {
+    return res.sendStatus(401)
+  }
+
+  next()
+})
+
+// overwrite create a deck, to allow file import.
+server.post('/decks', upload.single('cards'), async (req, res) => {
+  db.read()
+  const result = await createDeck(db, req.body, req.file)
+  return res.json(result)
+})
+
+// overwrite create a deck, to allow file import.
+server.put('/decks/:id/cards/import', upload.single('cards'), async (req, res) => {
+  db.read()
+  const result = await updateDeck(db, parseInt(req.params.id), req.file)
+  if (!result) {
+    return res.sendStatus(404)
+  }
+
+  return res.json(result)
 })
 
 server.delete('/data', (_req, res) => {

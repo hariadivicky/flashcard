@@ -20,8 +20,6 @@ function EditCard ({ deck, setDeck, cards, setCards}) {
             }
         }
         getDeck()
-        
-        console.log(deck)
     }, [deckId])
 
     useEffect(() => {
@@ -38,8 +36,6 @@ function EditCard ({ deck, setDeck, cards, setCards}) {
             }
         }
         getDeck()
-        
-        console.log(deck)
     }, [deckId])
 
     const handleChange = ({target}) => {
@@ -90,7 +86,7 @@ function EditCard ({ deck, setDeck, cards, setCards}) {
                         onChange={handleChange}
                         value={cards.back}/>
             </div>
-                <button type="submit" className="btn btn-secondary" onClick={handleCancel}>Cancel</button>
+                <button type="submit" className="btn btn-secondary mr-2" onClick={handleCancel}>Cancel</button>
                 <button type="submit" className="btn btn-primary" onClick={handleSubmit}>Submit</button>
                 </form>
             </div>

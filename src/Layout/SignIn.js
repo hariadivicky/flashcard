@@ -22,7 +22,7 @@ function SignIn() {
     try {
       const res = await signIn(formData)
       localStorage.setItem('flashcard-app-session', JSON.stringify(res))
-      history.push('/')
+      document.location.replace('/')
     } catch (e) {
       setErrorResponse(JSON.parse(e.message))
     }

@@ -31,6 +31,7 @@ function EditDeck() {
       try {
         const loadedDeck = await readDeck(deckId, abortController.signal);
         if (mountedRef.current) {
+          delete loadDeck.cards
           setEditDeckFormData(() => loadedDeck);
         }
       } catch (error) {
