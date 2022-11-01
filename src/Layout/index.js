@@ -8,14 +8,35 @@ import DeckView from "./DeckView"
 import AddCard from "./AddCard"
 import EditDeck from "./EditDeck"
 import EditCard from "./EditCard"
-import { BrowserRouter as Router, Route, Switch, useParams, useHistory } from "react-router-dom"
+import { BrowserRouter as Router, Route, Switch, useParams, useHistory, Redirect } from "react-router-dom"
 import ImportCard from "./ImportCard"
+import SignIn from './SignIn'
+import SignUp from './SignUp'
+
+const PrivateRoute = ({ children }) => {
+  const session = JSON.parse(localStorage.getItem('flashcard-app-session'))
+  if (!session || !session.apiToken || !session.name) {
+    return <Redirect to="/sign_in" />
+  }
+
+  return children
+}
+
+const GuestRoute = ({ children }) => {
+  const session = JSON.parse(localStorage.getItem('flashcard-app-session'))
+  if (session) {
+    return <Redirect to="/" />
+  }
+
+  return children
+}
+
 
 function Layout() {
   const [decks, setDecks] = useState([])
   const [deck, setDeck] = useState([])
-  const [cards, setCards] = useState([]);
-  
+  const [cards, setCards] = useState([]); 
+
 
   return (
     <div>
@@ -23,28 +44,54 @@ function Layout() {
       <div className ="container">
       <Switch>
         <Route exact path="/">
-          <Home decks={decks} setDecks={setDecks}/>
+          <PrivateRoute>
+            <Home decks={decks} setDecks={setDecks}/>
+          </PrivateRoute>
         </Route>
         <Route exact path="/decks/new">
-          <CreateDeck />
+          <PrivateRoute>
+            <CreateDeck />
+          </PrivateRoute>
         </Route>
         <Route exact path="/decks/:deckId/study">
-          <StudyCards deck={deck} setDeck={setDeck} cards={cards} setCards={setCards}/>
+          <PrivateRoute>
+            <StudyCards deck={deck} setDeck={setDeck} cards={cards} setCards={setCards}/>
+          </PrivateRoute>
         </Route>
         <Route exact path="/decks/:deckId">
-          <DeckView deck={deck} setDeck={setDeck} />
+          <PrivateRoute>
+            <DeckView deck={deck} setDeck={setDeck} />
+          </PrivateRoute>
         </Route>
         <Route exact path="/decks/:deckId/edit">
-          <EditDeck deck={deck} setDeck={setDeck} />
+          <PrivateRoute>
+            <EditDeck deck={deck} setDeck={setDeck} />
+          </PrivateRoute>
         </Route>
         <Route exact path="/decks/:deckId/cards/new">
-          <AddCard deck={deck} setDeck={setDeck} cards={cards} setCards={setCards}/>
+          <PrivateRoute>
+            <AddCard deck={deck} setDeck={setDeck} cards={cards} setCards={setCards}/>
+          </PrivateRoute>
         </Route>
         <Route exact path="/decks/:deckId/cards/import">
-          <ImportCard />
+          <PrivateRoute>
+            <ImportCard />
+          </PrivateRoute>
         </Route>
         <Route exact path="/decks/:deckId/cards/:cardsId/edit">
-          <EditCard deck={deck} setDeck={setDeck} cards={cards} setCards={setCards}/>
+          <PrivateRoute>
+            <EditCard deck={deck} setDeck={setDeck} cards={cards} setCards={setCards}/>
+          </PrivateRoute>
+        </Route>
+        <Route exact path="/sign_in">
+          <GuestRoute>
+            <SignIn />
+          </GuestRoute>
+        </Route>
+        <Route exact path="/sign_up">
+          <GuestRoute>
+            <SignUp />
+          </GuestRoute>
         </Route>
         <Route>
           <NotFound />

@@ -8,7 +8,8 @@ const signIn = (db, args) => {
   }
   
   return {
-    apiToken: result.user.apiToken
+    apiToken: result.user.apiToken,
+    name: result.user.name
   }
 }
 

@@ -42,15 +42,57 @@ async function fetchJson(url, options) {
 
   try {
     const response = await fetch(url, options);
+    const json = await response.json()
     if (response.status < 200 || response.status > 399) {
-      throw new Error(`${response.status} - ${response.statusText}`);
+      throw new Error(JSON.stringify(json))
     }
-    return await response.json();
+
+    return json
   } catch (error) {
     if (error.name !== "AbortError") {
       throw error;
     }
   }
+}
+
+/**
+ * Sign in
+ * @param user
+ *  email & password combination
+ * @param signal
+ *  optional AbortController.signal
+ * @returns {Promise<Error|*>}
+ *  a promise that resolves to the updated deck.
+ */
+ export async function signIn(user, signal) {
+  const url = `${API_BASE_URL}/auth/sign_in`;
+  const options = {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(user),
+    signal,
+  };
+  return await fetchJson(url, options);
+}
+
+/**
+ * Sign up
+ * @param user
+ *  email & password combination
+ * @param signal
+ *  optional AbortController.signal
+ * @returns {Promise<Error|*>}
+ *  a promise that resolves to the updated deck.
+ */
+ export async function signUp(user, signal) {
+  const url = `${API_BASE_URL}/auth/sign_up`;
+  const options = {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(user),
+    signal,
+  };
+  return await fetchJson(url, options);
 }
 
 /**
