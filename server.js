@@ -10,6 +10,8 @@ const { signUp } = require('./api/signUp')
 const { signIn } = require('./api/signIn')
 const dbPath = path.join(__dirname, 'data/db.json')
 
+// create an empty db if it doesn't exists.
+fs.closeSync(fs.openSync(dbPath, 'a'))
 const adapter = new FileSync(dbPath)
 const db = new low(adapter)
 // database default collections.
