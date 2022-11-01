@@ -62,7 +62,7 @@ async function fetchJson(url, options) {
     const response = await fetch(url, options);
     // invalid token / unauthorized user.
     if (response.status === 401) {
-      localStorage.removeItem('flashcard-app-sesion')
+      localStorage.removeItem('flashcard-app-session')
       document.location.replace('/sign_in')
       return
     }
