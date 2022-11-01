@@ -6,6 +6,8 @@ const low = require('lowdb')
 const FileSync = require('lowdb/adapters/FileSync')
 const { createDeck } = require('./api/createDeck')
 const { updateDeck } = require('./api/updateDeck')
+const { signUp } = require('./api/signUp')
+const { signIn } = require('./api/signIn')
 const dbPath = path.join(__dirname, 'data/db.json')
 
 const server = jsonServer.create()
@@ -42,6 +44,26 @@ server.put('/decks/:id/cards/import', upload.single('cards'), async (req, res) =
   }
 
   return res.json(result)
+})
+
+server.post('/auth/sign_up', (req, res) => {
+  db.read()
+  const result = signUp(db, req.body)
+  if (result.errors) {
+    return res.status(400).json(result)
+  }
+
+  res.json(result)
+})
+
+server.post('/auth/sign_in', (req, res) => {
+  db.read()
+  const result = signIn(db, req.body)
+  if (result.error) {
+    return res.status(400).json(result)
+  }
+
+  res.json(result)
 })
 
 server.use(router)
