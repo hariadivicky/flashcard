@@ -66,6 +66,16 @@ server.post('/auth/sign_in', (req, res) => {
   res.json(result)
 })
 
+server.delete('/data', (_req, res) => {
+  db.read()
+
+  db.set('decks', []).write()
+  db.set('cards', []).write()
+  db.set('users', []).write()
+
+  res.json({ success: true })
+})
+
 server.use(router)
 
 const port = 5000
