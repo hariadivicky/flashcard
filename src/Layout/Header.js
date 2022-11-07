@@ -13,8 +13,8 @@ function Header() {
   return (
     <header className="jumbotron bg-dark mb-4">
       <div className="container text-white">
-        <h1 className="display-4">Flashcard-o-matic</h1>
-        <p className="lead">Discover The Flashcard Difference.</p>
+        <h1 className="display-4">Memore</h1>
+        <p className="lead">Make learning vocabulary simple by designing flashcards that work for you.</p>
 
         {session && (
           <div className="text-right">
